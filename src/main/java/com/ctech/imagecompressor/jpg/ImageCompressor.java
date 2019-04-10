@@ -1,5 +1,7 @@
 package com.ctech.imagecompressor.jpg;
 
+import com.ctech.imagecompressor.ImageUtils;
+
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
@@ -45,7 +47,7 @@ public class ImageCompressor {
         byte[] orginalPngImageByte = pngOS.toByteArray();
 
         now = new Date().getTime();
-        byte[] convertedJpeg = convertPngToJpeg(orginalPngImageByte);
+        byte[] convertedJpeg = ImageUtils.convertPngToJpeg(orginalPngImageByte);
         System.out.println("Time take to convert png to jpg : " + (new Date().getTime() - now));
 
         byte[] compressedPngImageByte = compressJpeg(convertedJpeg);
@@ -91,32 +93,6 @@ public class ImageCompressor {
         }
         jpegWriter.dispose();
         return compressedImageBytes;
-    }
-
-    static private byte[] convertPngToJpeg(byte[] pngBinary) throws IOException {
-        //        byte[] pngBinary = DatatypeConverter.parseBase64Binary(pngBase64);
-        InputStream in = new ByteArrayInputStream(pngBinary);
-        BufferedImage pngImage = ImageIO.read(in);
-
-        int width = pngImage.getWidth(), height = pngImage.getHeight();
-        BufferedImage jpgImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
-        Graphics2D g = jpgImage.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-        g.setBackground(Color.WHITE);
-        g.clearRect(0, 0, width, height);
-        g.drawImage(pngImage, 0, 0, width, height, null);
-        g.dispose();
-
-        final ImageWriter writer = ImageIO.getImageWritersByFormatName("jpeg").next();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        writer.setOutput(ImageIO.createImageOutputStream(baos));
-        writer.write(null, new IIOImage(jpgImage, null, null), null);
-
-        return baos.toByteArray();
-        //        String jpgBase64 = DatatypeConverter.printBase64Binary(baos.toByteArray());
-        //        return jpgBase64;
     }
 
 
